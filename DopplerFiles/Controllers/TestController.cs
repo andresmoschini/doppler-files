@@ -1,15 +1,14 @@
-using DopplerFiles.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DopplerFiles.Controllers
 {
     [ApiController]
-    [Authorize(nameof(IsDopplerFilesUserRequirement))]
-    [Route("[controller]")]
+    [Authorize]
     public class TestController : ControllerBase
     {
         [HttpGet]
+        [Route("[controller]/{UserId?}")]
         public string AuthorizedAccess()
         {
             return "Authorized !!!";
@@ -18,7 +17,7 @@ namespace DopplerFiles.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        [Route("anonymous")]
+        [Route("[controller]/anonymous")]
         public string AnonymousAccess()
         {
             return "Anonymous !!!";
