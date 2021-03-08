@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -14,49 +15,46 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IAuthorizationHandler, IsSuperUserAuthorizationHandler>();
             services.ConfigureOptions<ConfigureDopplerSecurityOptions>();
 
-            services
-                .AddOptions<AuthorizationOptions>()
-                .Configure(o =>
-                {
-                    o.DefaultPolicy = new AuthorizationPolicyBuilder()
-                        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-                        .AddRequirements(new DopplerAuthorizationRequirement
-                        {
-                            AllowSuperUser = true,
-                            AllowOwnResource = true
-                        })
-                        .RequireAuthenticatedUser()
-                        .Build();
-
-                    o.AddPolicy(DopplerSecurityDefaults.DEFAULT_OR_SIGNED_PATHS_POLICY, new AuthorizationPolicyBuilder()
-                        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-                        .AddRequirements(new DopplerAuthorizationRequirement
-                        {
-                            AllowSuperUser = true,
-                            AllowOwnResource = true
-                        })
-                        .RequireAuthenticatedUser()
-                        .Build());
-                });
+            IEnumerable<SecurityKey> issuerSigningKeys = new List<SecurityKey>();
+            bool skipLifetimeValidation = false;
 
             services
                 .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
                 .Configure<IOptions<DopplerSecurityOptions>>((o, securityOptions) =>
                 {
-                    o.SaveToken = true;
-                    o.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        IssuerSigningKeys = securityOptions.Value.SigningKeys,
-                        ValidateIssuer = false,
-                        ValidateLifetime = !securityOptions.Value.SkipLifetimeValidation,
-                        ValidateAudience = false,
-                    };
+                    issuerSigningKeys = securityOptions.Value.SigningKeys;
+                    skipLifetimeValidation = !securityOptions.Value.SkipLifetimeValidation;
                 });
 
-            services.AddAuthentication()
-                .AddJwtBearer();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    IssuerSigningKeys = issuerSigningKeys,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = skipLifetimeValidation,
+                    ValidateAudience = false,
+                    ValidateIssuer = false
+                };
+            });
 
-            services.AddAuthorization();
+            services.AddAuthorization(options =>
+            {
+                options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .AddRequirements(new DopplerAuthorizationRequirement
+                    {
+                        AllowSuperUser = true,
+                        AllowOwnResource = true
+                    })
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
 
             return services;
         }
