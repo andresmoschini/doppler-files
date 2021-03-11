@@ -39,7 +39,7 @@ namespace StorageProviders
 
         protected virtual IAmazonS3 GetClient()
         {
-            return  new AmazonS3Client(_awsS3Settings.AccountInfo.AccessKey, _awsS3Settings.AccountInfo.SecretAccessKey, _regionEndpoints[_awsS3Settings.AccountInfo.RegionEndpoint]);
+            return new AmazonS3Client(_awsS3Settings.AccountInfo.AccessKey, _awsS3Settings.AccountInfo.SecretAccessKey, _regionEndpoints[_awsS3Settings.AccountInfo.RegionEndpoint]);
         }
 
         public async Task<UploadFileResult> UploadFile(string pathFile, string idUser, byte[] content, bool overwrite = false)

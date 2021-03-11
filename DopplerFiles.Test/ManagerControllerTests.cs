@@ -197,7 +197,8 @@ namespace DopplerFiles.Test
                 Content = fixture.Create<byte[]>()
             };
             _amazonS3.Setup(s => s.GetObjectAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new GetObjectResponse {
+                .ReturnsAsync(new GetObjectResponse
+                {
                     Key = $"/{ROOT_FOLDER}/{SUPER_USER_FOLDER}{uploadFileRequest.PathFile}"
                 });
 
