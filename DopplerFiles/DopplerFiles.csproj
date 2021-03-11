@@ -13,4 +13,16 @@
     <ProjectReference Include="..\StorageProviders\StorageProviders.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="private-keys-dev\dev.priv.key">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="private-keys-dev\dev.priv.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="public-keys-dev\dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

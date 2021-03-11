@@ -1,10 +1,7 @@
-using DopplerFiles.DopplerSecurity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using StorageProviders;
 using System.Text.Json.Serialization;
 
@@ -24,6 +21,8 @@ namespace DopplerFiles
         {
             services.Configure<AwsS3Settings>(Configuration.GetSection(nameof(AwsS3Settings)));
             services.Configure<ServiceSettings>(Configuration.GetSection(nameof(ServiceSettings)));
+            services.AddSingleton<IStorageProvider, AwsS3StorageProvider>();
+            services.AddSingleton<IFileValidator, FileValidator>();
             services.AddDopplerSecurity();
             services.AddControllers()
                 .AddJsonOptions(options =>
@@ -38,11 +37,7 @@ namespace DopplerFiles
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
+            app.UseExceptionHandler("/error");
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
