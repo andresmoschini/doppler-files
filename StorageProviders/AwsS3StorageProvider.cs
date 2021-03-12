@@ -18,6 +18,7 @@ namespace StorageProviders
         private readonly Dictionary<string, RegionEndpoint> _regionEndpoints = new Dictionary<string, RegionEndpoint>
         {
             {"USEast1",  RegionEndpoint.USEast1},
+            {"USEast2", RegionEndpoint.USEast2},
             {"USWest1",  RegionEndpoint.USWest1},
             {"USWest2",  RegionEndpoint.USWest2},
             {"EUWest1",  RegionEndpoint.EUWest1},

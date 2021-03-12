@@ -25,7 +25,6 @@ namespace DopplerFiles.Test
         private readonly HttpClient _httpClient;
         private readonly Mock<IAmazonS3> _amazonS3 = new Mock<IAmazonS3>();
         private const string ROOT_FOLDER = "Users";
-        private const string SUPER_USER_FOLDER = "Su";
 
         public ManagerControllerTests(ProductionEnvironmentDopplerFilesApplicationFactory factory)
         {
@@ -45,7 +44,6 @@ namespace DopplerFiles.Test
             serviceSettings.SetupGet(x => x.Value).Returns(new ServiceSettings
             {
                 UsersRootFolder = ROOT_FOLDER,
-                SuperUserFolder = SUPER_USER_FOLDER,
                 MaxFilePath = 1024,
                 MaxFileSizeBytes = 25000000,
                 DownloadLinkLifeTimeSec = 300
@@ -67,7 +65,7 @@ namespace DopplerFiles.Test
         public async Task UploadFile_When_Success_Using_Super_User_Returns_PathFile()
         {
             var fixture = new Fixture();
-            var url = $"http://localhost/manager";
+            var url = $"http://localhost";
             _httpClient.DefaultRequestHeaders.Add("Authorization",
                 $"Bearer {TestsHelper.GetSuperUserAuthenticationToken()}");
             var uploadFileRequest = new UploadFileRequest
@@ -83,7 +81,7 @@ namespace DopplerFiles.Test
             Assert.NotNull(result);
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             var resultContent = await result.Content.ReadAsStringAsync();
-            Assert.Equal($"/{ROOT_FOLDER}/{SUPER_USER_FOLDER}{uploadFileRequest.PathFile}", resultContent);
+            Assert.Equal($"/{ROOT_FOLDER}/{uploadFileRequest.PathFile}", resultContent);
         }
 
         [Theory()]
@@ -95,7 +93,7 @@ namespace DopplerFiles.Test
         {
             var fixture = new Fixture();
             var idUser = fixture.Create<string>();
-            var url = $"http://localhost/manager/{idUser}";
+            var url = $"http://localhost/{idUser}";
             _httpClient.DefaultRequestHeaders.Add("Authorization",
                 $"Bearer {TestsHelper.GetAnotherUserAuthenticationToken(idUser)}");
 
@@ -125,7 +123,7 @@ namespace DopplerFiles.Test
         public async Task UploadFile_When_Wrong_PathFile_Returns_BadRequest_With_Error_Message(string pathFile)
         {
             var fixture = new Fixture();
-            var url = $"http://localhost/manager";
+            var url = $"http://localhost";
             _httpClient.DefaultRequestHeaders.Add("Authorization",
                 $"Bearer {TestsHelper.GetSuperUserAuthenticationToken()}");
             var uploadFileRequest = new UploadFileRequest
@@ -146,7 +144,7 @@ namespace DopplerFiles.Test
         public async Task UploadFile_When_Storage_Provider_Fails_Returns_InternalServerError()
         {
             var fixture = new Fixture();
-            var url = $"http://localhost/manager";
+            var url = $"http://localhost";
             _httpClient.DefaultRequestHeaders.Add("Authorization",
                 $"Bearer {TestsHelper.GetSuperUserAuthenticationToken()}");
             var uploadFileRequest = new UploadFileRequest
@@ -168,7 +166,7 @@ namespace DopplerFiles.Test
         public async Task UploadFile_When_Missing_File_Content_Returns_BadRequest_With_Error_Message()
         {
             var fixture = new Fixture();
-            var url = $"http://localhost/manager";
+            var url = $"http://localhost";
             _httpClient.DefaultRequestHeaders.Add("Authorization",
                 $"Bearer {TestsHelper.GetSuperUserAuthenticationToken()}");
             var uploadFileRequest = new UploadFileRequest
@@ -187,7 +185,7 @@ namespace DopplerFiles.Test
         public async Task UploadFile_When_File_Already_Exist_And_Not_Override_Returns_BadRequest_With_Error_Message()
         {
             var fixture = new Fixture();
-            var url = $"http://localhost/manager";
+            var url = $"http://localhost";
             _httpClient.DefaultRequestHeaders.Add("Authorization",
                 $"Bearer {TestsHelper.GetSuperUserAuthenticationToken()}");
             var uploadFileRequest = new UploadFileRequest
@@ -199,7 +197,7 @@ namespace DopplerFiles.Test
             _amazonS3.Setup(s => s.GetObjectAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new GetObjectResponse
                 {
-                    Key = $"/{ROOT_FOLDER}/{SUPER_USER_FOLDER}{uploadFileRequest.PathFile}"
+                    Key = $"/{ROOT_FOLDER}/{uploadFileRequest.PathFile}"
                 });
 
             var result = await _httpClient.PostAsync(url, CreateUploadFileRequestContent(uploadFileRequest));
@@ -216,7 +214,7 @@ namespace DopplerFiles.Test
         {
             var fixture = new Fixture();
             var keyFile = fixture.Create<string>();
-            var url = $"http://localhost/manager/{keyFile}";
+            var url = $"http://localhost/{keyFile}";
             var donwloadUrl = fixture.Create<string>();
             _httpClient.DefaultRequestHeaders.Clear();
 
@@ -235,7 +233,7 @@ namespace DopplerFiles.Test
         {
             var fixture = new Fixture();
             var keyFile = fixture.Create<string>();
-            var url = $"http://localhost/manager/{keyFile}";
+            var url = $"http://localhost/{keyFile}";
             var donwloadUrl = fixture.Create<string>();
             _httpClient.DefaultRequestHeaders.Clear();
 
@@ -253,7 +251,7 @@ namespace DopplerFiles.Test
         {
             var fixture = new Fixture();
             var keyFile = fixture.Create<string>();
-            var url = $"http://localhost/manager/{keyFile}";
+            var url = $"http://localhost/{keyFile}";
             var donwloadUrl = fixture.Create<string>();
             _httpClient.DefaultRequestHeaders.Clear();
 
