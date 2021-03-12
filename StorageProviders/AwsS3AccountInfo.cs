@@ -4,5 +4,6 @@ namespace StorageProviders
     {
         public string AccessKey { get; set; }
         public string SecretAccessKey { get; set; }
+        public string RegionEndpoint { get; set; }
     }
 }
