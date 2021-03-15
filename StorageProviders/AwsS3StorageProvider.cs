@@ -53,9 +53,18 @@ namespace StorageProviders
             };
 
             using var client = GetClient();
-
-            var getObjectResponse = await client.GetObjectAsync(_awsS3Settings.BucketName, request.Key);
-
+            GetObjectResponse getObjectResponse = null;
+            try
+            {
+                getObjectResponse = await client.GetObjectAsync(_awsS3Settings.BucketName, request.Key);
+            }
+            catch (AmazonS3Exception ex)
+            {
+                if (!ex.ErrorCode.Equals(AwsS3ErrorCodes.NoSuchKey.ToString()))
+                {
+                    throw;
+                }
+            }
             var existingFile = getObjectResponse != null && getObjectResponse.Key.Equals(request.Key);
 
             if (!existingFile || (existingFile && overwrite))

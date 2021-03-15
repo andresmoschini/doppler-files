@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StorageProviders;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace DopplerFiles.Controllers
 {
@@ -43,7 +44,7 @@ namespace DopplerFiles.Controllers
         [Route("/{keyFile}")]
         public ActionResult GetDownloadUrl(string keyFile)
         {
-            var url = _storageProvider.GetDownloadUrl(keyFile);
+            var url = _storageProvider.GetDownloadUrl(HttpUtility.UrlDecode(keyFile));
 
             if (string.IsNullOrWhiteSpace(url))
             {
