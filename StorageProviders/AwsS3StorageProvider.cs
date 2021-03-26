@@ -49,7 +49,9 @@ namespace StorageProviders
             {
                 InputStream = new MemoryStream(content),
                 BucketName = _awsS3Settings.BucketName,
-                Key = $"/{_serviceSettings.UsersRootFolder}/{idUser}{pathFile}"
+                Key = !string.IsNullOrWhiteSpace(idUser) ?
+                    $"/{_serviceSettings.UsersRootFolder}/{idUser}{pathFile}" :
+                    $"/{_serviceSettings.UsersRootFolder}{pathFile}"
             };
 
             using var client = GetClient();

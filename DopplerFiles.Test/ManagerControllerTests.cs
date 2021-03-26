@@ -81,7 +81,7 @@ namespace DopplerFiles.Test
             Assert.NotNull(result);
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             var resultContent = await result.Content.ReadAsStringAsync();
-            Assert.Equal($"/{ROOT_FOLDER}/{uploadFileRequest.PathFile}", resultContent);
+            Assert.Equal($"/{ROOT_FOLDER}{uploadFileRequest.PathFile}", resultContent);
         }
 
         [Theory()]
@@ -197,7 +197,7 @@ namespace DopplerFiles.Test
             _amazonS3.Setup(s => s.GetObjectAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new GetObjectResponse
                 {
-                    Key = $"/{ROOT_FOLDER}/{uploadFileRequest.PathFile}"
+                    Key = $"/{ROOT_FOLDER}{uploadFileRequest.PathFile}"
                 });
 
             var result = await _httpClient.PostAsync(url, CreateUploadFileRequestContent(uploadFileRequest));

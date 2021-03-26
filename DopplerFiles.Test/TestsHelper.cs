@@ -23,7 +23,7 @@ namespace DopplerFiles.Test
         {
             var payload = new Dictionary<string, object>
             {
-                { "isSu", "true" },
+                { "isSU", "true" },
                 { "exp", DateTimeOffset
                     .UtcNow
                     .AddMinutes(TOKEN_EXPIRATION_TIME_MINUTES).ToUnixTimeSeconds()}
@@ -38,7 +38,7 @@ namespace DopplerFiles.Test
             {
                 { "nameid", idUser },
                 { "unique_name", idUser },
-                { "isSu", false },
+                { "isSU", false },
                 { "sub", idUser },
                 { "role", "USER" },
                 { "exp", DateTimeOffset
