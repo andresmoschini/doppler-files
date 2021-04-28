@@ -1,0 +1,47 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "09:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: AWSSDK.S3
+    versions:
+    - 3.7.0.10
+    - 3.7.0.12
+    - 3.7.0.13
+    - 3.7.0.14
+    - 3.7.0.15
+    - 3.7.0.16
+    - 3.7.0.8
+    - 3.7.0.9
+  - dependency-name: Swashbuckle.AspNetCore
+    versions:
+    - 6.1.1
+    - 6.1.2
+  - dependency-name: AutoFixture
+    versions:
+    - 4.16.0
+  - dependency-name: jose-jwt
+    versions:
+    - 3.1.0
+  - dependency-name: Microsoft.AspNetCore.Mvc.Testing
+    versions:
+    - 5.0.4
+  - dependency-name: Microsoft.AspNetCore.Authentication.JwtBearer
+    versions:
+    - 5.0.4
+  commit-message:
+    prefix: chore
+    include: scope
+- package-ecosystem: docker
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "09:00"
+  open-pull-requests-limit: 10
+  commit-message:
+    prefix: chore
+    include: scope
